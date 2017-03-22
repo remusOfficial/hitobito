@@ -116,7 +116,10 @@ Hitobito::Application.routes.draw do
           resources :attachments, only: [:create, :destroy]
 
           resources :participations do
-            get 'print', on: :member
+            member do
+              get 'print'
+              resources :contact_data, only:  [:edit, :update], controller: 'event/participation_contact_data'
+            end
           end
 
           resources :roles, except: [:index, :show]

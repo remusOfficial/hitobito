@@ -90,6 +90,21 @@ class Person < ActiveRecord::Base
 
   acts_as_taggable
 
+  ### ATTRIBUTES
+
+  # contact attrs for checking/updating when participating for event
+  ## never show
+  class_attribute :contact_attr_blacklist
+  self.contact_attr_blacklist = [:id, :primary_group_id]
+
+  ## show always
+  class_attribute :mandatory_contact_attrs
+  self.mandatory_contact_attrs = [:email, :first_name, :last_name]
+
+  ## associations to show
+  class_attribute :contact_associations
+  self.contact_associations = [:additional_emails, :phone_numbers, :social_accounts]
+
   ### ASSOCIATIONS
 
   has_many :roles, inverse_of: :person
@@ -179,6 +194,10 @@ class Person < ActiveRecord::Base
       emails = people.collect(&:email) +
                AdditionalEmail.mailing_emails_for(people)
       emails.select(&:present?).uniq
+    end
+
+    def contact_attrs
+      PUBLIC_ATTRS - mandatory_contact_attrs - contact_attr_blacklist
     end
 
     private

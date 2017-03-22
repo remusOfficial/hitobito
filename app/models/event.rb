@@ -130,6 +130,10 @@ class Event < ActiveRecord::Base
 
   accepts_nested_attributes_for :dates, :questions, allow_destroy: true
 
+  ### SERIALIZED ATTRIBUTES
+  serialize :required_contact_attrs, Array
+  serialize :hidden_contact_attrs, Array
+
   ### CLASS METHODS
 
   class << self
