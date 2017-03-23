@@ -549,17 +549,29 @@ describe Event do
       expect(event.errors[:hidden_contact_attrs]).to be_present
     end
 
-    it 'same contact attribute cannot be set as required and hidden' do
+    it 'is not possible to set same attr as hidden and required' do
       event.update({required_contact_attrs: [:nickname],
                     hidden_contact_attrs: [:nickname]})
 
       expect(event.errors[:required_contact_attrs]).to be_present
     end
 
-    it 'mandatory contact attributes cannot be set as hidden' do
+    it 'is not possible to set mandatory attr as hidden' do
       event.update({hidden_contact_attrs: [:email]})
 
       expect(event.errors[:hidden_contact_attrs]).to be_present
+    end
+
+    it 'is not possible to set contact association as required' do
+      event.update({required_contact_attrs: [:additional_emails]})
+
+      expect(event.errors[:required_contact_attrs]).to be_present
+    end
+
+    it 'is possible to hide contact association' do
+      event.update({hidden_contact_attrs: [:additional_emails]})
+
+      expect(event.reload.hidden_contact_attrs).to include(:additional_emails)
     end
 
   end

@@ -9,7 +9,7 @@ module ContactAttrs
     end
 
     def render
-      safe_join(mandatory_contact_attrs)
+        safe_join([mandatory_contact_attrs, configurable_contact_attrs, contact_associations])
     end
 
     private
@@ -19,35 +19,71 @@ module ContactAttrs
     attr_reader :f, :event
 
     def mandatory_contact_attrs
-      Person.mandatory_contact_attrs.collect do |a|
+      Person::MANDATORY_CONTACT_ATTRS.collect do |a|
         [f.label(a, attr_label(a), class: 'control-label'),
         radio_buttons(a, true, [:required]),
         line_break]
       end
     end
 
+    def configurable_contact_attrs
+      Person.contact_attrs.collect do |a|
+        [f.label(a, attr_label(a), class: 'control-label'),
+        radio_buttons(a),
+        line_break]
+      end
+    end
+
+    def contact_associations
+      Person::CONTACT_ASSOCIATIONS.collect do |a|
+        [f.label(a, attr_label(a), class: 'control-label'),
+        assoc_checkbox(a),
+        line_break]
+      end
+    end
+
     def radio_buttons(attr, disabled = false, options = [:required, :optional, :hidden])
       f.content_tag(:div, class: 'controls') do
-        safe_join(options.collect do |o|
+        buttons = options.collect do |o|
           checked = options.size == 1
           radio_button(attr, disabled, o, checked)
-        end)
+        end
+        safe_join(buttons)
       end
     end
 
     def radio_button(attr, disabled, option, checked = false)
-      f.label(:attr, class: 'radio inline') do
+      f.label(for_label(attr), class: 'radio inline') do
         checked = checked ? checked : checked?(attr, option)
         options = {disabled: disabled, checked: checked}
-        f.radio_button("contact_attrs[#{attr}]", option, options) +
+        f.radio_button(for_label(attr), option, options) +
           option_label(option)
       end
     end
 
+    def assoc_checkbox(assoc)
+      f.label(for_label(assoc), class: 'checkbox inline') do
+        options = {checked: assoc_hidden?(assoc)}
+        f.check_box(for_label(assoc), options, :hidden) +
+          option_label(:hidden)
+      end
+    end
+
+    def assoc_hidden?(assoc)
+      event.hidden_contact_attrs.include?(assoc.to_s)
+    end
+
     def checked?(attr, option)
-      return event.required_contact_attrs.include?(attr) if option == :required
-      return event.hidden_contact_attrs.include?(attr) if option == :hidden
-      true
+      attr = attr.to_s
+      required = event.required_contact_attrs.include?(attr)
+      hidden = event.hidden_contact_attrs.include?(attr)
+      return required if option == :required
+      return hidden if option == :hidden
+      !required && !hidden
+    end
+
+    def for_label(attr)
+      "contact_attrs[#{attr}]"
     end
 
     def option_label(option)
@@ -59,7 +95,7 @@ module ContactAttrs
     end
 
     def line_break
-      f.content_tag(:br)
+      '<br/>'.html_safe
     end
 
   end

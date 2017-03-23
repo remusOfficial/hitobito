@@ -304,7 +304,7 @@ class Event < ActiveRecord::Base
 
   def validate_hidden_contact_attrs
     hidden_contact_attrs.each do |a|
-      unless Person.contact_attrs.include?(a.to_sym)
+      unless Person.contact_attrs.include?(a.to_sym) || Person::CONTACT_ASSOCIATIONS.include?(a.to_sym)
         errors.add(:hidden_contact_attrs, "#{a} is not a valid person attr")
       end
     end

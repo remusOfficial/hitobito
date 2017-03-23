@@ -58,6 +58,16 @@ class Person < ActiveRecord::Base
                     :reset_password_sent_at, :sign_in_count, :updated_at, :updater_id,
                     :show_global_label_formats]
 
+  # contact attrs for checking/updating when participating for event
+  ## never show
+  CONTACT_ATTR_BLACKLIST = [:id, :primary_group_id, :picture, :company]
+
+  ## show always
+  MANDATORY_CONTACT_ATTRS = [:email, :first_name, :last_name]
+
+  ## associations to show
+  CONTACT_ASSOCIATIONS = [:additional_emails, :phone_numbers, :social_accounts]
+
   GENDERS = %w(m w)
 
 
@@ -91,19 +101,6 @@ class Person < ActiveRecord::Base
   acts_as_taggable
 
   ### ATTRIBUTES
-
-  # contact attrs for checking/updating when participating for event
-  ## never show
-  class_attribute :contact_attr_blacklist
-  self.contact_attr_blacklist = [:id, :primary_group_id]
-
-  ## show always
-  class_attribute :mandatory_contact_attrs
-  self.mandatory_contact_attrs = [:email, :first_name, :last_name]
-
-  ## associations to show
-  class_attribute :contact_associations
-  self.contact_associations = [:additional_emails, :phone_numbers, :social_accounts]
 
   ### ASSOCIATIONS
 
@@ -197,7 +194,7 @@ class Person < ActiveRecord::Base
     end
 
     def contact_attrs
-      PUBLIC_ATTRS - mandatory_contact_attrs - contact_attr_blacklist
+      PUBLIC_ATTRS - MANDATORY_CONTACT_ATTRS - CONTACT_ATTR_BLACKLIST
     end
 
     private
