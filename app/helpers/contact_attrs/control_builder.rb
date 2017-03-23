@@ -3,8 +3,6 @@ module ContactAttrs
 
     include ActionView::Helpers::OutputSafetyHelper
 
-    delegate :t, to: I18n
-
     def initialize(form, event)
       @f = form
       @event = event
@@ -16,23 +14,30 @@ module ContactAttrs
 
     private
 
+    delegate :t, to: I18n
+
     attr_reader :f, :event
 
     def mandatory_contact_attrs
       Person.mandatory_contact_attrs.collect do |a|
-        radio_buttons(a, true)
+        [f.label(a, attr_label(a), class: 'control-label'),
+        radio_buttons(a, true, [:required]),
+        line_break]
       end
     end
 
-    def radio_buttons(attr, disabled = false)
-      [:required, :optional, :hidden].collect do |o|
-        radio_button(attr, disabled, o)
+    def radio_buttons(attr, disabled = false, options = [:required, :optional, :hidden])
+      f.content_tag(:div, class: 'controls') do
+        safe_join(options.collect do |o|
+          checked = options.size == 1
+          radio_button(attr, disabled, o, checked)
+        end)
       end
     end
 
-    def radio_button(attr, disabled, option)
+    def radio_button(attr, disabled, option, checked = false)
       f.label(:attr, class: 'radio inline') do
-        checked = checked?(attr, option)
+        checked = checked ? checked : checked?(attr, option)
         options = {disabled: disabled, checked: checked}
         f.radio_button("contact_attrs[#{attr}]", option, options) +
           option_label(option)
@@ -46,7 +51,15 @@ module ContactAttrs
     end
 
     def option_label(option)
-      option
+      t("activerecord.attributes.event/contact_attrs.#{option}")
+    end
+
+    def attr_label(attr)
+      t("activerecord.attributes.person.#{attr}")
+    end
+
+    def line_break
+      f.content_tag(:br)
     end
 
   end

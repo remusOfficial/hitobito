@@ -2,16 +2,3 @@
   %p= t('.explanation')
   .control-group
     = ContactAttrs::ControlBuilder.new(f, entry).render
-    -#- (Event::REQUIRED_CONTACT_DETAILS).each do |key|
-      -#= label key, t("activerecord.attributes.person.#{key}"), class: 'control-label'
-      -#.controls
-        -#= contact_detail_radio_button(t('.required'), key, Event::REQUIRED, disabled: true)
-      -#%br
-
-  -#- (Event::DEFAULT_CONTACT_DETAILS).each do |key|
-    -#= label key, t("activerecord.attributes.person.#{key}"), class: 'control-label'
-    -#.controls
-      -#= contact_detail_radio_button(t('.required'), key, Event::REQUIRED)
-      -#= contact_detail_radio_button(t('.optional'), key, Event::OPTIONAL)
-      -#= contact_detail_radio_button(t('.not_shown'), key)
-    -#%br
