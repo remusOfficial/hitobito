@@ -9,7 +9,7 @@ module ContactAttrs
     end
 
     def render
-        safe_join([mandatory_contact_attrs, configurable_contact_attrs, contact_associations])
+      safe_join([mandatory_contact_attrs, configurable_contact_attrs, contact_associations])
     end
 
     private

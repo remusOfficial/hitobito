@@ -1,9 +1,8 @@
-class Event::ParticipationContactDataController < ApplicationController
+class Event::ParticipationContactDataController < CrudController
 
-  def edit
-  end
+  private
 
-  def update
+  def build_entry
   end
 
 end
