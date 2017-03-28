@@ -11,6 +11,17 @@ module EventsHelper
     number_with_precision(event.training_days, precision: 1)
   end
 
+  #def button_action_event_apply(event, group = nil)
+    #participation = event.participations.new
+    #participation.person = current_user
+
+    #if event.application_possible? && can?(:new, participation)
+      #group ||= event.groups.first
+
+      #Dropdown::Event::ParticipantAdd.for_user(self, group, event, current_user)
+    #end
+  #end
+
   def button_action_event_apply(event, group = nil)
     participation = event.participations.new
     participation.person = current_user

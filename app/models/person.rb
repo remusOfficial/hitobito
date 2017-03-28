@@ -194,7 +194,7 @@ class Person < ActiveRecord::Base
     end
 
     def contact_attrs
-      PUBLIC_ATTRS - MANDATORY_CONTACT_ATTRS - CONTACT_ATTR_BLACKLIST
+      PUBLIC_ATTRS - CONTACT_ATTR_BLACKLIST
     end
 
     private

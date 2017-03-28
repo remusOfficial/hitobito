@@ -262,6 +262,10 @@ de:
           for_participants: 'Qualifikationen für Teilnehmende'
           for_leaders: 'Qualifikationen für Leitende'
 
+    participation_contact_datas:
+      edit:
+        title: Kontaktangaben
+        save: Weiter
     participations:
       approvals:
         title: Freigabe

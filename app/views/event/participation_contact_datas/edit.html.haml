@@ -1,0 +1,16 @@
+- title t('.title')
+
+= crud_form(entry,
+  { cancel_url: group_event_path(group, event),
+    buttons_top: false,
+    buttons_bottom: true,
+    submit_label: t('.save'),
+    url: contact_data_group_event_participations_path(group, event) }) do |f|
+
+  - entry.attribute_keys.each do |a|
+    = f.labeled_input_field(a)
+
+  = field_set_tag do
+    = f.labeled_inline_fields_for :additional_emails, 'contactable/additional_email_fields'
+
+  = hidden_field_tag('event_role[type]', params[:event_role][:type])

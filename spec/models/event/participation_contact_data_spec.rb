@@ -2,39 +2,52 @@ require 'spec_helper'
 
 describe Event::ParticipationContactData do
 
+  let(:event) { events(:top_event) }
+  let(:person) { people(:top_leader) }
+
+  let(:attributes) do
+    { first_name: 'John', last_name: 'Gonzales',
+      email: 'top_leader@example.com',
+      nickname: '' }
+  end
+
   context 'validations' do
 
-    let(:event) { events(:top_event) } 
-    let(:person) { people(:top_leader) } 
-
-    let(:attributes) do 
-      { first_name: 'John', last_name: 'Gonzales',
-                   email: 'top_leader@example.com',
-                   nickname: ''
-                 }
-    end
-
-    it 'is not valid when required contact attr blank' do
+    it 'validates contact attributes' do
       contact_data = participation_contact_data(attributes)
-      event.update!({required_contact_attrs: [:nickname]})
+      event.update!(required_contact_attrs: [:nickname])
 
       expect(contact_data.valid?).to be false
       expect(contact_data.errors.first).to eq([:nickname, 'muss ausgefüllt werden'])
     end
 
-    it 'is not valid when person attrs invalid' do
+    it 'validates person attributes' do
       attrs = attributes
-      attrs[:last_name] = ''
-      attrs[:first_name] = ''
+      attrs[:email] = 'invalid'
       contact_data = participation_contact_data(attrs)
 
       expect(contact_data.valid?).to be false
-      expect(contact_data.errors.first).to eq([:base, ['Bitte geben Sie einen Namen ein']])
+      expect(contact_data.errors.first).to eq([:email, ['ist nicht gültig']])
     end
 
   end
 
   context 'update person data' do
+
+    it 'updates person attributes' do
+      contact_data = participation_contact_data(attributes)
+
+      contact_data.save
+
+      person.reload
+
+      expect(person.first_name).to eq('John')
+      expect(person.last_name).to eq('Gonzales')
+    end
+
+    it 'updates person nested attributes' do
+    end
+
   end
 
   private
