@@ -27,11 +27,15 @@ module ContactAttrs
     end
 
     def configurable_contact_attrs
-      Person.contact_attrs.collect do |a|
+      non_mandatory_contact_attrs.collect do |a|
         [f.label(a, attr_label(a), class: 'control-label'),
         radio_buttons(a),
         line_break]
       end
+    end
+
+    def non_mandatory_contact_attrs
+      Person.contact_attrs - Person::MANDATORY_CONTACT_ATTRS
     end
 
     def contact_associations

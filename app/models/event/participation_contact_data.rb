@@ -1,11 +1,17 @@
 class Event::ParticipationContactData
+
+  attr_reader :person
+
+  T_PERSON_ATTRS = 'activerecord.attributes.person.'.freeze
   
   delegate :t, to: I18n
 
-  delegate :respond_to?, :column_for_attribute, :timeliness_cache_attribute, :has_attribute?, to: :person
+  delegate :column_for_attribute, :timeliness_cache_attribute, :has_attribute?, to: :person
 
-  delegate *Person.contact_attrs, to: :person
-  delegate *Person::CONTACT_ASSOCIATIONS, to: :person
+  delegate :layer_group, to: :event
+
+  delegate(*Person.contact_attrs, to: :person)
+  delegate(*Person::CONTACT_ASSOCIATIONS, to: :person)
 
   include ActiveModel::Validations
 
@@ -37,18 +43,23 @@ class Event::ParticipationContactData
     person.save
   end
 
+  def parent
+    event
+  end
+
   def method_missing(method)
-    if method =~ /^.*_came_from_user?/
-      return person.send(method)
-    end
-    if method =~ /^.*_before_type_cast/
-      return person.send(method)
-    end
+    return person.send(method) if method =~ /^.*_came_from_user\?/
+    return person.send(method) if method =~ /^.*_before_type_cast/
+
     super
   end
 
   def attribute_keys
-    Person.contact_attrs - event.hidden_contact_attrs
+    Person.contact_attrs - hidden_contact_attrs
+  end
+
+  def hidden_contact_attrs
+    event.hidden_contact_attrs.collect(&:to_sym)
   end
 
   def respond_to?(attr)
@@ -74,12 +85,12 @@ class Event::ParticipationContactData
 
   private
 
-  attr_reader :model_params, :event, :person
+  attr_reader :model_params, :event
 
   def validate_required_contact_attrs
     required_attributes.each do |a|
       if model_params[a].blank?
-        errors.add(a, t('errors.messages.blank'))
+        errors.add(t("#{T_PERSON_ATTRS}#{a}"), t('errors.messages.blank'))
       end
     end
   end

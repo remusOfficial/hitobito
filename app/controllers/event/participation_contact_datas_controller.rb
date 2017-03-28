@@ -1,10 +1,24 @@
 class Event::ParticipationContactDatasController < ApplicationController
 
+  # required for nesting
+  def model_scope
+    Person.none
+  end
+
+  def path_args
+    nil
+  end
+
+  include Nestable
+  self.nesting = Group, Event
+
   helper_method :group, :event, :entry
 
   authorize_resource :entry, class: Event::ParticipationContactData
 
-  before_action :set_entry
+  decorates :group, :event
+
+  before_action :set_entry, :group
 
   def edit; end
 
@@ -26,19 +40,20 @@ class Event::ParticipationContactDatasController < ApplicationController
   end
 
   def set_entry
-    if params[:event_participation_contact_data]
-      @entry = Event::ParticipationContactData.new(event, current_user, model_params)
-    else
-      @entry = build_entry
-    end
+    @entry = if params[:event_participation_contact_data]
+               Event::ParticipationContactData.new(event, current_user, model_params)
+             else
+               build_entry
+             end
+    @participation_contact_data = @entry
   end
 
   def event
-    Event.find(params[:event_id])
+    @event ||= Event.find(params[:event_id])
   end
 
   def group
-    Group.find(params[:group_id])
+    @group ||= Group.find(params[:group_id])
   end
 
   def model_params
@@ -48,5 +63,6 @@ class Event::ParticipationContactDatasController < ApplicationController
   def permitted_attrs
     PeopleController.permitted_attrs
   end
+
 
 end
