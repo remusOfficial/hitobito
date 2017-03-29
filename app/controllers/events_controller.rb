@@ -138,7 +138,7 @@ class EventsController < CrudController
 
   def assign_contact_attrs
     contact_attrs = model_params.delete(:contact_attrs)
-    reset_contact_attrs if contact_attrs.present?
+    return unless contact_attrs.present?
     contact_attrs.each do |a, v|
       entry.required_contact_attrs << a if v.to_sym == :required
       entry.hidden_contact_attrs << a if v.to_sym == :hidden

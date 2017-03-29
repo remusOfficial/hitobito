@@ -4,7 +4,8 @@
   { cancel_url: group_event_path(group, event),
     buttons_bottom: true,
     submit_label: t('.save'),
-    url: contact_data_group_event_participations_path(group, event) }) do |f|
+    url: contact_data_group_event_participations_path(group, event,
+      {event_role: { type: params[:event_role][:type] }})}) do |f|
 
   = field_set_tag do
     - [:first_name, :last_name, :nickname, :company_name].each do |a|
@@ -13,9 +14,9 @@
   = render 'address_fields', f: f
 
   - if entry.show_attr?(:email)
-    = f.labeled_input_field :email, help_inline: t('.used_as_login')
+    = f.labeled_input_field :email, help_inline: t('people.email_field.used_as_login')
 
-  - Person::CONTACT_ASSOCIATIONS.each do |a|
+  - Event::ParticipationContactData::CONTACT_ASSOCIATIONS.each do |a|
     = field_set_tag do
       - unless entry.hidden_contact_attrs.include?(a)
         = f.labeled_inline_fields_for a, "contactable/#{a.to_s.singularize}_fields"
@@ -29,9 +30,7 @@
     - if entry.show_attr?(:birthday)
       = f.labeled_string_field(:birthday,
                                value: f.date_value(:birthday),
-                               help_inline: t('.format_birthday'),
+                               help_inline: t('people.fields.format_birthday'),
                                class: 'span2')
 
   = render_extensions :fields, locals: { f: f }
-
-  = hidden_field_tag('event_role[type]', params[:event_role][:type])

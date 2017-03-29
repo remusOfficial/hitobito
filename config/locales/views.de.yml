@@ -333,6 +333,8 @@ de:
         Gib mögliche Antworten mit Komma getrennt ein oder lass das Feld leer,
         um beliebige Antworten zu ermöglichen.
       caption_applications_cancelable: Teilnehmende können sich selbst abmelden
+      contact_attrs_explanation: Wähle welche Kontaktangaben bei der Anmeldung abgefragt werden sollen.
+      contact_attrs: Kontaktangaben
     form_tabs:
       general: Allgemein
     global:

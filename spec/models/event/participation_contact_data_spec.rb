@@ -45,9 +45,6 @@ describe Event::ParticipationContactData do
       expect(person.last_name).to eq('Gonzales')
     end
 
-    it 'updates person nested attributes' do
-    end
-
   end
 
   private

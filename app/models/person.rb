@@ -58,18 +58,7 @@ class Person < ActiveRecord::Base
                     :reset_password_sent_at, :sign_in_count, :updated_at, :updater_id,
                     :show_global_label_formats]
 
-  # contact attrs for checking/updating when participating for event
-  ## never show
-  CONTACT_ATTR_BLACKLIST = [:id, :primary_group_id, :picture, :company]
-
-  ## show always
-  MANDATORY_CONTACT_ATTRS = [:email, :first_name, :last_name]
-
-  ## associations to show
-  CONTACT_ASSOCIATIONS = [:additional_emails, :phone_numbers, :social_accounts]
-
   GENDERS = %w(m w)
-
 
   # define devise before other modules
   devise :database_authenticatable,
@@ -191,10 +180,6 @@ class Person < ActiveRecord::Base
       emails = people.collect(&:email) +
                AdditionalEmail.mailing_emails_for(people)
       emails.select(&:present?).uniq
-    end
-
-    def contact_attrs
-      PUBLIC_ATTRS - CONTACT_ATTR_BLACKLIST
     end
 
     private

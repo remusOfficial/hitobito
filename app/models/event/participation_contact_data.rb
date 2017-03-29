@@ -1,8 +1,26 @@
+# encoding: utf-8
+
+#  Copyright (c) 2012-2017, Pfadibewegung Schweiz. This file is part of
+#  hitobito_youth and licensed under the Affero General Public License version 3
+#  or later. See the COPYING file at the top-level directory or at
+#  https://github.com/hitobito/hitobito_youth.
+
 class Event::ParticipationContactData
 
   attr_reader :person
 
   T_PERSON_ATTRS = 'activerecord.attributes.person.'.freeze
+
+  MANDATORY_CONTACT_ATTRS = [:email, :first_name, :last_name]
+
+  CONTACT_ATTRS = [:first_name, :last_name, :nickname, :company_name,
+                  :email, :address, :zip_code, :town, :country, :gender, :birthday]
+
+  ## associations to show
+  CONTACT_ASSOCIATIONS = [:additional_emails, :phone_numbers, :social_accounts]
+
+  delegate(*CONTACT_ATTRS, to: :person)
+  delegate(*CONTACT_ASSOCIATIONS, to: :person)
   
   delegate :t, to: I18n
 
@@ -10,26 +28,24 @@ class Event::ParticipationContactData
 
   delegate :layer_group, to: :event
 
-  delegate(*Person.contact_attrs, to: :person)
-  delegate(*Person::CONTACT_ASSOCIATIONS, to: :person)
-
   include ActiveModel::Validations
 
   validate :validate_required_contact_attrs
   validate :validate_person_attrs
 
-  def self.base_class
-    self
-  end
+  class << self
 
-  def self.demodulized_route_keys
-    nil
-  end
+    delegate :reflect_on_association, :human_attribute_name, to: Person
 
-  def self.reflect_on_association(association)
-    Person.reflect_on_association(association)
-  end
+    def base_class
+      self
+    end
 
+    def demodulized_route_keys
+      nil
+    end
+
+  end
 
   def initialize(event, person, model_params = {})
     @model_params = model_params
@@ -58,8 +74,12 @@ class Event::ParticipationContactData
     attribute_keys.include?(a)
   end
 
+  def required_attr?(a)
+    required_attributes.include?(a.to_s)
+  end
+
   def attribute_keys
-    Person.contact_attrs - hidden_contact_attrs
+    CONTACT_ATTRS - hidden_contact_attrs
   end
 
   def hidden_contact_attrs
@@ -87,6 +107,11 @@ class Event::ParticipationContactData
     nil
   end
 
+  def required_attributes
+    @required_attributes ||= event.required_contact_attrs +
+      MANDATORY_CONTACT_ATTRS.map(&:to_s)
+  end
+
   private
 
   attr_reader :model_params, :event
@@ -109,10 +134,6 @@ class Event::ParticipationContactData
     person.errors.messages.each do |m|
       errors.add(*m)
     end
-  end
-
-  def required_attributes
-    event.required_contact_attrs + Person::MANDATORY_CONTACT_ATTRS
   end
 
 end

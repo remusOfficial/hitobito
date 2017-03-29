@@ -19,7 +19,7 @@ module ContactAttrs
     attr_reader :f, :event
 
     def mandatory_contact_attrs
-      Person::MANDATORY_CONTACT_ATTRS.collect do |a|
+      Event::ParticipationContactData::MANDATORY_CONTACT_ATTRS.collect do |a|
         [f.label(a, attr_label(a), class: 'control-label'),
         radio_buttons(a, true, [:required]),
         line_break]
@@ -35,11 +35,12 @@ module ContactAttrs
     end
 
     def non_mandatory_contact_attrs
-      Person.contact_attrs - Person::MANDATORY_CONTACT_ATTRS
+      Event::ParticipationContactData::CONTACT_ATTRS -
+        Event::ParticipationContactData::MANDATORY_CONTACT_ATTRS
     end
 
     def contact_associations
-      Person::CONTACT_ASSOCIATIONS.collect do |a|
+      Event::ParticipationContactData::CONTACT_ASSOCIATIONS.collect do |a|
         [f.label(a, attr_label(a), class: 'control-label'),
         assoc_checkbox(a),
         line_break]
@@ -57,7 +58,7 @@ module ContactAttrs
     end
 
     def radio_button(attr, disabled, option, checked = false)
-      f.label(for_label(attr), class: 'radio inline') do
+      f.label("#{for_label(attr)}_#{option}", class: 'radio inline') do
         checked = checked ? checked : checked?(attr, option)
         options = {disabled: disabled, checked: checked}
         f.radio_button(for_label(attr), option, options) +
@@ -66,10 +67,12 @@ module ContactAttrs
     end
 
     def assoc_checkbox(assoc)
-      f.label(for_label(assoc), class: 'checkbox inline') do
-        options = {checked: assoc_hidden?(assoc)}
-        f.check_box(for_label(assoc), options, :hidden) +
-          option_label(:hidden)
+      f.content_tag(:div, class: 'controls') do
+        f.label(for_label(assoc), class: 'checkbox inline') do
+          options = {checked: assoc_hidden?(assoc)}
+          f.check_box(for_label(assoc), options, :hidden) +
+            option_label(:hidden)
+        end
       end
     end
 

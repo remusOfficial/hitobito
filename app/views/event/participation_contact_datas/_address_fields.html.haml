@@ -4,10 +4,8 @@
 -#  https://github.com/hitobito/hitobito.
 
 = f.labeled_text_area(:address, rows: 2) if entry.show_attr?(:address)
-- if entry.show_attr?(:zip_code) && entry.show_attr?(:town)
-  = f.labeled(:zip_code, t('contactable.fields.zip_town'), nil, class: 'controls-row') do
-    = f.string_field(:zip_code, class: 'span2', maxlength: 10)
-    = f.string_field(:town, class: 'span4')
+- [:zip_code, :town].each do |a|
+  = f.labeled_input_field(a, class: 'span4') if entry.show_attr?(a)
 - if entry.show_attr?(:country)
   = f.labeled(:country) do
     .span6{style: 'margin-left: 0px'}
@@ -18,3 +16,4 @@
                        { class: 'chosen-select',
                          data: { placeholder: ' ',
                                  chosen_no_results: t('global.chosen_no_results') } })
+    = entry.required_attr?(:country) ? content_tag(:span, class: 'required') { '*' } : ''

@@ -35,7 +35,7 @@ describe Event::ParticipationContactDatasController, type: :controller do
       expect(dom).to have_selector('#additional_emails_fields')
       expect(dom).to have_selector('#phone_numbers_fields')
 
-      expect(dom).to have_no_selector('input#event_participation_contact_data_address')
+      expect(dom).to have_no_selector('textarea#event_participation_contact_data_address')
       expect(dom).to have_no_selector('input#event_participation_contact_data_nickname')
       expect(dom).to have_no_selector('#social_accounts_fields')
 
@@ -60,6 +60,16 @@ describe Event::ParticipationContactDatasController, type: :controller do
       expect(dom).to have_selector('#additional_emails_fields')
       expect(dom).to have_selector('#phone_numbers_fields')
       expect(dom).to have_selector('#social_accounts_fields')
+
+    end
+
+    it 'marks required attributes with an asterisk' do
+
+      course.update!({ required_contact_attrs: ['address', 'nickname'] })
+
+      get :edit, group_id: course.groups.first.id, event_id: course.id,
+            event_role: { type: 'Event::Course::Role::Participant' }
+
 
     end
 

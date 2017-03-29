@@ -293,7 +293,7 @@ class Event < ActiveRecord::Base
 
   def validate_required_contact_attrs
     required_contact_attrs.each do |a|
-      unless Person.contact_attrs.include?(a.to_sym)
+      unless ParticipationContactData::CONTACT_ATTRS.include?(a.to_sym)
         errors.add(:required_contact_attrs, "#{a} is not a valid or a mandatory person attr")
       end
       if hidden_contact_attrs.include?(a)
@@ -304,7 +304,8 @@ class Event < ActiveRecord::Base
 
   def validate_hidden_contact_attrs
     hidden_contact_attrs.each do |a|
-      unless Person.contact_attrs.include?(a.to_sym) || Person::CONTACT_ASSOCIATIONS.include?(a.to_sym)
+      unless ParticipationContactData::CONTACT_ATTRS.include?(a.to_sym) ||
+          ParticipationContactData::CONTACT_ASSOCIATIONS.include?(a.to_sym)
         errors.add(:hidden_contact_attrs, "#{a} is not a valid person attr")
       end
     end
