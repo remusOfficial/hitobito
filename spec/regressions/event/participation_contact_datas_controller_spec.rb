@@ -22,20 +22,45 @@ describe Event::ParticipationContactDatasController, type: :controller do
 
   describe 'GET edit' do
 
-    before do
-      course.update!({ hidden_contact_attrs: ['address', 'nickname'] })
-    end
-
     it 'does not show hidden contact fields' do
+
+      course.update!({ hidden_contact_attrs: ['address', 'nickname', 'social_accounts'] })
+
       get :edit, group_id: course.groups.first.id, event_id: course.id,
             event_role: { type: 'Event::Course::Role::Participant' }
 
       expect(dom).to have_selector('input#event_participation_contact_data_first_name')
       expect(dom).to have_selector('input#event_participation_contact_data_last_name')
       expect(dom).to have_selector('input#event_participation_contact_data_email')
+      expect(dom).to have_selector('#additional_emails_fields')
+      expect(dom).to have_selector('#phone_numbers_fields')
 
       expect(dom).to have_no_selector('input#event_participation_contact_data_address')
       expect(dom).to have_no_selector('input#event_participation_contact_data_nickname')
+      expect(dom).to have_no_selector('#social_accounts_fields')
+
+    end
+
+    it 'shows all contact fields by default' do
+
+      get :edit, group_id: course.groups.first.id, event_id: course.id,
+            event_role: { type: 'Event::Course::Role::Participant' }
+
+      contact_attrs = [:first_name, :last_name, :nickname,
+                       :company_name, :zip_code, :town,
+                       :gender_w, :gender_m, :gender_,
+                       :birthday, :email]
+
+      contact_attrs.each do |a|
+        expect(dom).to have_selector("input#event_participation_contact_data_#{a}")
+      end
+
+      expect(dom).to have_selector("textarea#event_participation_contact_data_address")
+
+      expect(dom).to have_selector('#additional_emails_fields')
+      expect(dom).to have_selector('#phone_numbers_fields')
+      expect(dom).to have_selector('#social_accounts_fields')
+
     end
 
   end

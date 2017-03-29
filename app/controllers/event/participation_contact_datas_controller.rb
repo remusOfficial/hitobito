@@ -16,7 +16,7 @@ class Event::ParticipationContactDatasController < ApplicationController
 
   authorize_resource :entry, class: Event::ParticipationContactData
 
-  decorates :group, :event
+  decorates :group, :event, :participation_contact_data
 
   before_action :set_entry, :group
 
@@ -63,6 +63,5 @@ class Event::ParticipationContactDatasController < ApplicationController
   def permitted_attrs
     PeopleController.permitted_attrs
   end
-
 
 end

@@ -6,7 +6,7 @@ class Event::ParticipationContactData
   
   delegate :t, to: I18n
 
-  delegate :column_for_attribute, :timeliness_cache_attribute, :has_attribute?, to: :person
+  delegate :gender_label, :column_for_attribute, :timeliness_cache_attribute, :has_attribute?, to: :person
 
   delegate :layer_group, to: :event
 
@@ -51,7 +51,11 @@ class Event::ParticipationContactData
     return person.send(method) if method =~ /^.*_came_from_user\?/
     return person.send(method) if method =~ /^.*_before_type_cast/
 
-    super
+    super(method)
+  end
+
+  def show_attr?(a)
+    attribute_keys.include?(a)
   end
 
   def attribute_keys
