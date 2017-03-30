@@ -1,3 +1,10 @@
+# encoding: utf-8
+
+#  Copyright (c) 2012-2017, Pfadibewegung Schweiz. This file is part of
+#  hitobito_youth and licensed under the Affero General Public License version 3
+#  or later. See the COPYING file at the top-level directory or at
+#  https://github.com/hitobito/hitobito_youth.
+
 require 'spec_helper'
 
 describe Event::ParticipationContactData do
@@ -6,28 +13,29 @@ describe Event::ParticipationContactData do
   let(:person) { people(:top_leader) }
 
   let(:attributes) do
-    { first_name: 'John', last_name: 'Gonzales',
+    h = ActiveSupport::HashWithIndifferentAccess.new
+    h.merge({ first_name: 'John', last_name: 'Gonzales',
       email: 'top_leader@example.com',
-      nickname: '' }
+      nickname: '' })
   end
 
   context 'validations' do
 
     it 'validates contact attributes' do
       contact_data = participation_contact_data(attributes)
-      event.update!(required_contact_attrs: [:nickname])
+      event.update!(required_contact_attrs: ['nickname'])
 
       expect(contact_data.valid?).to be false
-      expect(contact_data.errors.first).to eq([:nickname, 'muss ausgefüllt werden'])
+      expect(contact_data.errors.full_messages.first).to eq('Übername muss ausgefüllt werden')
     end
 
     it 'validates person attributes' do
       attrs = attributes
-      attrs[:email] = 'invalid'
+      attrs[:birthday] = 'invalid'
       contact_data = participation_contact_data(attrs)
 
       expect(contact_data.valid?).to be false
-      expect(contact_data.errors.first).to eq([:email, ['ist nicht gültig']])
+      expect(contact_data.errors.full_messages.first).to eq('Geburtstag ist kein gültiges Datum')
     end
 
   end

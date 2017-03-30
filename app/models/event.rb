@@ -291,10 +291,16 @@ class Event < ActiveRecord::Base
     validate_hidden_contact_attrs
   end
 
+  def valid_contact_attr?(attr)
+    (ParticipationContactData::CONTACT_ATTRS +
+      ParticipationContactData::CONTACT_ASSOCIATIONS).include?(attr)
+  end
+
   def validate_required_contact_attrs
-    required_contact_attrs.each do |a|
-      unless ParticipationContactData::CONTACT_ATTRS.include?(a.to_sym)
-        errors.add(:required_contact_attrs, "#{a} is not a valid or a mandatory person attr")
+    required_contact_attrs.map(&:to_sym).each do |a|
+      unless valid_contact_attr?(a) &&
+          ParticipationContactData::CONTACT_ASSOCIATIONS.exclude?(a)
+        errors.add(:required_contact_attrs, "#{a} is not a valid contact attr or a contact association")
       end
       if hidden_contact_attrs.include?(a)
         errors.add(:required_contact_attrs, "#{a} cannot be set as required and hidden")
@@ -303,10 +309,12 @@ class Event < ActiveRecord::Base
   end
 
   def validate_hidden_contact_attrs
-    hidden_contact_attrs.each do |a|
-      unless ParticipationContactData::CONTACT_ATTRS.include?(a.to_sym) ||
-          ParticipationContactData::CONTACT_ASSOCIATIONS.include?(a.to_sym)
-        errors.add(:hidden_contact_attrs, "#{a} is not a valid person attr")
+    hidden_contact_attrs.map(&:to_sym).each do |a|
+      unless valid_contact_attr?(a)
+        errors.add(:hidden_contact_attrs, "#{a} is not a valid contact attr")
+      end
+      if ParticipationContactData::MANDATORY_CONTACT_ATTRS.include?(a)
+        errors.add(:hidden_contact_attrs, "#{a} is a mandatory contact attr")
       end
     end
   end

@@ -267,8 +267,10 @@ de:
         title: Kontaktangaben
         save: Weiter
     participations:
+      edit:
+        title: Anmeldung
       approvals:
-        title: Freigabe
+      title: Freigabe
       specific_information: 'Spezifische Angaben'
       no_answer_given: '(nicht beantwortet)'
       actions_show:

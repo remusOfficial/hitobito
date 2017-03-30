@@ -11,20 +11,23 @@ class Event::ParticipationContactData
 
   T_PERSON_ATTRS = 'activerecord.attributes.person.'.freeze
 
+  # rubocop:disable Style/MutableConstant
   MANDATORY_CONTACT_ATTRS = [:email, :first_name, :last_name]
 
   CONTACT_ATTRS = [:first_name, :last_name, :nickname, :company_name,
-                  :email, :address, :zip_code, :town, :country, :gender, :birthday]
+                   :email, :address, :zip_code, :town,
+                   :country, :gender, :birthday]
 
-  ## associations to show
   CONTACT_ASSOCIATIONS = [:additional_emails, :phone_numbers, :social_accounts]
+  # rubocop:enable Style/MutableConstant
 
   delegate(*CONTACT_ATTRS, to: :person)
   delegate(*CONTACT_ASSOCIATIONS, to: :person)
-  
+
   delegate :t, to: I18n
 
-  delegate :gender_label, :column_for_attribute, :timeliness_cache_attribute, :has_attribute?, to: :person
+  delegate :gender_label, :column_for_attribute, :timeliness_cache_attribute,
+           :has_attribute?, to: :person
 
   delegate :layer_group, to: :event
 
@@ -118,8 +121,8 @@ class Event::ParticipationContactData
 
   def validate_required_contact_attrs
     required_attributes.each do |a|
-      if model_params[a].blank?
-        errors.add(t("#{T_PERSON_ATTRS}#{a}"), t('errors.messages.blank'))
+      if model_params[a.to_s].blank?
+        errors.add(a, t('errors.messages.blank'))
       end
     end
   end
@@ -131,8 +134,8 @@ class Event::ParticipationContactData
   end
 
   def collect_person_errors
-    person.errors.messages.each do |m|
-      errors.add(*m)
+    person.errors.full_messages.each do |m|
+      errors.add(:base, m)
     end
   end
 
