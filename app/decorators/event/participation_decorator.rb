@@ -55,10 +55,15 @@ class Event::ParticipationDecorator < ApplicationDecorator
   end
 
   def qualify_action_link(group, method, icon)
+    return qualified_state(icon) unless can?(:qualify, event)
     h.link_to(h.group_event_qualification_path(group, event_id, model),
               method: method, remote: true, title: tooltips[icon]) do
       h.content_tag(:i, '', class: "icon icon-#{icon} disabled")
     end
+  end
+
+  def qualified_state(icon)
+    h.content_tag(:i, '', class: "icon icon-#{icon} disabled")
   end
 
   def qualifier
